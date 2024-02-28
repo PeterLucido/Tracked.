@@ -1,5 +1,6 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Image } from 'react-native';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 
@@ -7,7 +8,6 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
@@ -17,6 +17,8 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const logo = require('@/assets/images/Tracked-Logo.png');
+  const Logo = () => <Image source={logo} style={{ width: 125, height: 30 }} resizeMode="contain" />;
 
   return (
     <Tabs
@@ -27,10 +29,10 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerTitle: () => <Logo />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
@@ -48,10 +50,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="month"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerTitle: () => <Logo />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="create"
+        options={{
+          headerTitle: () => <Logo />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="plus-square" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tracking"
+        options={{
+          headerTitle: () => <Logo />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
         }}
       />
     </Tabs>
