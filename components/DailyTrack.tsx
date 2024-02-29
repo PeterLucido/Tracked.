@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
+import Slider from '@react-native-community/slider';
 
 interface Category {
   name: string;
-  scale: number;
+  scale: number; // Ensure this is set to 10 in your categories data
 }
 
 interface DailyTrackProps {
@@ -12,47 +13,55 @@ interface DailyTrackProps {
 
 const DailyTrack = ({ categories }: DailyTrackProps) => {
   const [ratings, setRatings] = useState<{ [category: string]: number }>({});
+  const [note, setNote] = useState<string>(''); 
   
   const currentDate = new Date().toLocaleDateString();
 
   const handleRating = (category: string, rating: number) => {
-    setRatings(prevRatings => ({ ...prevRatings, [category]: rating }));
+    setRatings((prevRatings) => ({ ...prevRatings, [category]: rating }));
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.date}>{currentDate}</Text>
-      {categories.map(category => (
+      {categories.map((category) => (
         <View key={category.name} style={styles.categoryContainer}>
           <Text style={styles.category}>{category.name}</Text>
-          <View style={styles.ratingContainer}>
-            {Array.from({ length: category.scale }, (_, index) => index + 1).map(number => (
-              <TouchableOpacity
-                key={number}
-                style={[
-                  styles.circle,
-                  ratings[category.name] === number && styles.selectedCircle
-                ]}
-                onPress={() => handleRating(category.name, number)}
-              >
-                <Text style={[
-                  styles.circleText,
-                  ratings[category.name] === number && styles.selectedCircleText
-                ]}>{number}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.sliderRow}>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={10}
+              step={0.5}
+              value={ratings[category.name] || 0}
+              onValueChange={(value) => handleRating(category.name, value)}
+              minimumTrackTintColor="#00AEEF"
+              maximumTrackTintColor="#D3D3D3"
+              thumbTintColor="#00AEEF"
+            />
+            <Text style={styles.ratingText}>{ratings[category.name]?.toFixed(1) || '0'}</Text>
           </View>
         </View>
       ))}
+      {/* Note Section */}
+      <TextInput
+        style={styles.input}
+        onChangeText={setNote}
+        value={note}
+        placeholder="Notes..."
+        multiline
+        textAlignVertical="top"
+        placeholderTextColor="grey" 
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    flex: 1,
     alignItems: 'center',
-    width: '90%',
+    justifyContent: 'center',
     padding: 20,
     backgroundColor: 'white',
   },
@@ -63,7 +72,13 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
   categoryContainer: {
-    marginBottom: 20,
+    width: '100%',
+    marginBottom: 8,
+  },
+  sliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   category: {
     fontSize: 18,
@@ -71,31 +86,34 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#00AEEF',
   },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-  },
-  circle: {
-    height: 25,
-    width: 25,
-    borderRadius: 15,
-    borderWidth: 1.5,
-    borderColor: 'grey',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5,
-  },
-  selectedCircle: {
-    backgroundColor: '#00AEEF',
-    borderColor: '#00AEEF',
-  },
-  circleText: {
-    color: 'grey',
+  ratingText: {
+    width: 40, 
+    textAlign: 'center',
+    color: '#00AEEF',
+    fontSize: 18,
     fontWeight: 'bold',
   },
-  selectedCircleText: {
-    color: 'white',
+  sliderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+  },
+  slider: {
+    width: '90%',
+  },
+  input: {
+    alignSelf: 'stretch', 
+    height: 100,
+    fontSize: 18,
+    borderColor: '#00AEEF',
+    borderWidth: 2,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    marginTop: 20,
+    textAlign: 'left',
+    color: 'grey',
   },
 });
 

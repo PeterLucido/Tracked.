@@ -18,15 +18,6 @@ export default function Home() {
     <View style={styles.main}>
       <ScrollView contentContainerStyle={styles.container}>
         <DailyTrack categories={categories} />
-        <TextInput
-          style={styles.input}
-          onChangeText={setNote}
-          value={note}
-          placeholder="Notes..."
-          multiline
-          textAlignVertical="top"
-          placeholderTextColor="grey" 
-        />
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
@@ -51,22 +42,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
-    marginTop: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: 'white',
     fontSize: 18,
-  },
-  input: {
-    height: 100,
-    fontSize: 18,
-    borderColor: '#00AEEF',
-    borderWidth: 2,
-    borderRadius: 5,
-    width: '90%',
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    marginBottom: 10,
-    textAlign: 'left',
   },
 });
