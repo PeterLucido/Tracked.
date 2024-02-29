@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
+import Slider from '@react-native-community/slider';
 
 interface Rating {
   [key: string]: number;
@@ -20,7 +20,6 @@ interface DayViewProps {
 const DayView = ({ dayData }: DayViewProps) => {
   const categoriesArray = Object.keys(dayData.categories).map((key) => ({
     name: key,
-    scale: 10,
     rating: dayData.categories[key],
   }));
 
@@ -30,29 +29,19 @@ const DayView = ({ dayData }: DayViewProps) => {
       {categoriesArray.map((category) => (
         <View key={category.name} style={styles.categoryContainer}>
           <Text style={styles.category}>{category.name}</Text>
-          <View style={styles.ratingContainer}>
-            {Array.from({ length: category.scale }, (_, index) => {
-              const ratingValue = index + 1;
-              const isSelected = category.rating === ratingValue;
-              return (
-                <View
-                  key={ratingValue}
-                  style={[
-                    styles.circle,
-                    isSelected && styles.selectedCircle,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.circleText,
-                      isSelected && styles.selectedCircleText,
-                    ]}
-                  >
-                    {ratingValue}
-                  </Text>
-                </View>
-              );
-            })}
+          <View style={styles.sliderRow}>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={10}
+              step={0.5}
+              value={category.rating}
+              minimumTrackTintColor="#00AEEF"
+              maximumTrackTintColor="#D3D3D3"
+              thumbTintColor="#00AEEF"
+              disabled={true}
+            />
+            <Text style={styles.ratingText}>{category.rating.toFixed(1)}</Text>
           </View>
         </View>
       ))}
@@ -65,9 +54,10 @@ const DayView = ({ dayData }: DayViewProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    flex: 1,
     alignItems: 'center',
-    width: '90%',
+    justifyContent: 'flex-start',
+    top: 20,
     padding: 20,
     backgroundColor: 'white',
   },
@@ -76,55 +66,45 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: 'grey',
+    alignSelf: 'center', 
   },
   categoryContainer: {
-    marginBottom: 20,
+    alignSelf: 'stretch', // Stretch to take full width
+    marginBottom: 8,
+  },
+  sliderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Space between the slider and rating text
+    width: '100%', // Full width
+  },
+  slider: {
+    flex: 1, // Slider takes as much space as possible
+  },
+  ratingText: {
+    width: 40,
+    textAlign: 'center',
+    color: '#00AEEF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   category: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     color: '#00AEEF',
   },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-  },
-  circle: {
-    height: 25,
-    width: 25,
-    borderRadius: 15,
-    borderWidth: 1.5, 
-    borderColor: 'grey',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5,
-  },
-  selectedCircle: {
-    backgroundColor: '#00AEEF',
-    borderColor: '#00AEEF',
-  },
-  circleText: {
-    color: 'grey',
-    fontWeight: 'bold',
-  },
-  selectedCircleText: {
-    color: 'white',
-  },
   noteContainer: {
+    alignSelf: 'stretch',
     borderWidth: 2,
     borderColor: '#00AEEF',
     borderRadius: 5,
-    width: '90%',
     padding: 10,
-    marginBottom: 10,
+    marginTop: 20,
+    height: 100,
   },
   note: {
-    height: 100,
-    fontSize: 18,
-    textAlign: 'left',
     color: 'grey',
+    fontSize: 18,
   },
 });
 

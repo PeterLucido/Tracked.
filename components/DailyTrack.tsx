@@ -4,7 +4,7 @@ import Slider from '@react-native-community/slider';
 
 interface Category {
   name: string;
-  scale: number; // Ensure this is set to 10 in your categories data
+  scale: number;
 }
 
 interface DailyTrackProps {
