@@ -68,7 +68,7 @@ const CalendarView = () => {
           textDayFontWeight: '500',
           textMonthFontWeight: 'bold',
           textDayHeaderFontWeight: '500',
-          textDayFontSize: 20,
+          textDayFontSize: 15,
           textMonthFontSize: 20,
           textDayHeaderFontSize: 16,
         }}
