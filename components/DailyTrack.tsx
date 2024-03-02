@@ -11,9 +11,10 @@ interface DailyTrackProps {
   categories: Category[];
   onRatingsChange: (newRatings: { [category: string]: number }) => void;
   onNoteChange: (newNote: string) => void;
+  editable: boolean;
 }
 
-const DailyTrack = ({ categories, onRatingsChange, onNoteChange }: DailyTrackProps) => {
+const DailyTrack = ({ categories, editable, onRatingsChange, onNoteChange }: DailyTrackProps) => {
   const [ratings, setRatings] = useState<{ [category: string]: number }>({});
   const [note, setNote] = useState<string>(''); 
   
@@ -47,6 +48,7 @@ const DailyTrack = ({ categories, onRatingsChange, onNoteChange }: DailyTrackPro
               minimumTrackTintColor="#00AEEF"
               maximumTrackTintColor="#D3D3D3"
               thumbTintColor="#00AEEF"
+              disabled={!editable}
             />
             <Text style={styles.ratingText}>{ratings[category.name]?.toFixed(1) || '0'}</Text>
           </View>
@@ -60,6 +62,7 @@ const DailyTrack = ({ categories, onRatingsChange, onNoteChange }: DailyTrackPro
         multiline
         textAlignVertical="top"
         placeholderTextColor="grey" 
+        editable={editable}
       />
     </View>
   );

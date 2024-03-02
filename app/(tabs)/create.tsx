@@ -23,10 +23,7 @@ export default function TabThreeScreen() {
   
       if (user) {
         const firestore = getFirestore();
-  
-        // Adjust the path to the userCategories subcollection
         const categoriesQuery = query(collection(firestore, 'categories', user.uid, 'userCategories'));
-  
         const querySnapshot = await getDocs(categoriesQuery);
         const fetchedCategories: Category[] = [];
         querySnapshot.forEach((doc) => {

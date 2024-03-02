@@ -15,6 +15,8 @@ export default function Home() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [dataFetchedForToday, setDataFetchedForToday] = useState(false);
+
 
   useEffect(() => {
     const auth = getAuth();
@@ -28,7 +30,7 @@ export default function Home() {
           const querySnapshot = await getDocs(categoriesCollectionRef);
           const fetchedCategories = querySnapshot.docs.map(doc => ({
             name: doc.data().name,
-            scale: 10 // Assuming the scale is always 10
+            scale: 10
           }));
           setCategories(fetchedCategories);
         } catch (error) {
@@ -65,6 +67,7 @@ export default function Home() {
         console.log('Day saved successfully.');
         setIsSaving(false); 
         setShowModal(true);
+        setDataFetchedForToday(true);
       } catch (error) {
         console.error('Error saving day:', error);
         setIsSaving(false);
@@ -90,13 +93,13 @@ export default function Home() {
             categories={categories} 
             onRatingsChange={handleRatingsChange}
             onNoteChange={handleNoteChange}
+            editable={!dataFetchedForToday}
           />
           <TouchableOpacity style={styles.button} onPress={handleSave} disabled={isSaving}>
             <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
           </TouchableOpacity>
         </ScrollView>
       )}
-      {/* Modal for showing "Day Saved!" message */}
       <Modal
         animationType="slide"
         transparent={true}
