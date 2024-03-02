@@ -43,7 +43,6 @@ const DailyTrack = ({ categories }: DailyTrackProps) => {
           </View>
         </View>
       ))}
-      {/* Note Section */}
       <TextInput
         style={styles.input}
         onChangeText={setNote}
@@ -104,6 +103,7 @@ const styles = StyleSheet.create({
   },
   input: {
     alignSelf: 'stretch', 
+    maxWidth: '100%',
     height: 100,
     fontSize: 18,
     borderColor: '#00AEEF',

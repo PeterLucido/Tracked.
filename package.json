@@ -15,6 +15,9 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
     "@react-native-community/slider": "^4.5.0",
+    "@react-native-firebase/app": "^19.0.0",
+    "@react-native-firebase/auth": "^19.0.0",
+    "@react-native-firebase/firestore": "^19.0.0",
     "@react-native-picker/picker": "^2.6.1",
     "@react-navigation/native": "^6.0.2",
     "expo": "~50.0.7",
@@ -25,6 +28,7 @@
     "expo-status-bar": "~1.11.1",
     "expo-system-ui": "~2.9.3",
     "expo-web-browser": "~12.8.2",
+    "firebase": "^10.8.1",
     "moment": "^2.30.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -38,7 +42,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-slider-scaling-image": "^0.14.0",
     "react-native-svg": "^15.0.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-constants": "~15.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,27 +1,54 @@
-import { ScrollView, StyleSheet } from 'react-native';
-import { View } from '@/components/Themed';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DailyTrack from '@/components/DailyTrack';
-import React from 'react';
-import { Text, TouchableOpacity, TextInput } from 'react-native';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
+import Loading from '@/components/loading';
+import SignUp from '@/components/SignUp';
 
 export default function Home() {
-  const [note, setNote] = React.useState('');
-  const categories = [
-    { name: 'Work', scale: 10 },
-    { name: 'Relationship', scale: 10 },
-    { name: 'Happiness', scale: 10 },
-    { name: 'Calm/Peace', scale: 10 },
-    { name: 'Health', scale: 10 },
-  ];
+  const [user, setUser] = useState<User | null>(null);
+  const [categories, setCategories] = useState<{ name: string; scale: number }[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setLoading(true);
+        const firestore = getFirestore();
+        const categoriesCollectionRef = collection(firestore, 'categories', currentUser.uid, 'userCategories');
+        try {
+          const querySnapshot = await getDocs(categoriesCollectionRef);
+          const fetchedCategories = querySnapshot.docs.map(doc => ({
+            name: doc.data().name,
+            scale: 10
+          }));
+          setCategories(fetchedCategories);
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (!user) {
+    return <SignUp />;
+  }
 
   return (
     <View style={styles.main}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <DailyTrack categories={categories} />
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      {loading ? <Loading /> : (
+        <ScrollView contentContainerStyle={styles.container}>
+          <DailyTrack categories={categories} />
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -29,6 +56,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
