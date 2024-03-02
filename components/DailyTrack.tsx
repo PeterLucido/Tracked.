@@ -9,16 +9,25 @@ interface Category {
 
 interface DailyTrackProps {
   categories: Category[];
+  onRatingsChange: (newRatings: { [category: string]: number }) => void;
+  onNoteChange: (newNote: string) => void;
 }
 
-const DailyTrack = ({ categories }: DailyTrackProps) => {
+const DailyTrack = ({ categories, onRatingsChange, onNoteChange }: DailyTrackProps) => {
   const [ratings, setRatings] = useState<{ [category: string]: number }>({});
   const [note, setNote] = useState<string>(''); 
   
   const currentDate = new Date().toLocaleDateString();
 
   const handleRating = (category: string, rating: number) => {
-    setRatings((prevRatings) => ({ ...prevRatings, [category]: rating }));
+    const newRatings = { ...ratings, [category]: rating };
+    setRatings(newRatings);
+    onRatingsChange(newRatings);
+  };
+
+  const handleNoteChange = (newNote: string) => {
+    setNote(newNote);
+    onNoteChange(newNote);
   };
 
   return (
@@ -45,7 +54,7 @@ const DailyTrack = ({ categories }: DailyTrackProps) => {
       ))}
       <TextInput
         style={styles.input}
-        onChangeText={setNote}
+        onChangeText={handleNoteChange}
         value={note}
         placeholder="Notes..."
         multiline
