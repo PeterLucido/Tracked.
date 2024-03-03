@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { getFirestore, doc, setDoc, deleteDoc, collection, query, where, getDocs, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, deleteDoc, collection, query, getDocs, } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 interface Category {
@@ -49,19 +49,12 @@ export default function TabThreeScreen() {
       if (user) {
         const firestore = getFirestore();
         const categoriesCollectionRef = collection(firestore, 'categories', user.uid, 'userCategories');
-  
-        // Create a new document for each new category
+
         newCategories.forEach(async (categoryName) => {
           const newCategoryRef = doc(categoriesCollectionRef);
           await setDoc(newCategoryRef, { name: categoryName });
         });
-  
-        console.log('Categories saved:', newCategories);
-  
-        // Fetch and set the updated categories
         fetchCategories();
-  
-        // Clear input field
         setCategoriesInput('');
       } else {
         console.error('No user logged in.');
@@ -79,14 +72,9 @@ export default function TabThreeScreen() {
   
       if (user) {
         const firestore = getFirestore();
-  
-        // Adjust the path to point to the individual category document within the userCategories subcollection
         const categoryDocRef = doc(firestore, 'categories', user.uid, 'userCategories', categoryId);
-  
         await deleteDoc(categoryDocRef);
         console.log('Category deleted:', categoryId);
-  
-        // Refresh categories list
         fetchCategories();
       } else {
         console.error('No user logged in.');

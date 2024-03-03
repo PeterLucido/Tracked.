@@ -42,7 +42,7 @@ export default function Home() {
             scale: 10
           }));
           setCategories(fetchedCategories);
-          await fetchDayData(firestore, currentUser.uid); // Fetch day's data after categories are loaded
+          await fetchDayData(firestore, currentUser.uid);
         } catch (error) {
           console.error('Error fetching categories or day data:', error);
         }
@@ -55,10 +55,7 @@ export default function Home() {
   
 const fetchDayData = async (firestore: any, userId: string) => {
   const today = getFormattedDate();
-  console.log("Formatted date:", today); // Log the formatted date
-
   const userDayRef = doc(firestore, 'users', userId, 'days', today);
-  console.log("Firestore path:", userDayRef.path); // Log the Firestore path being used
 
   try {
     const docSnap = await getDoc(userDayRef);
@@ -67,9 +64,7 @@ const fetchDayData = async (firestore: any, userId: string) => {
       setRatings(dayData.categories);
       setNote(dayData.note);
       setDataFetchedForToday(true);
-      console.log("Fetched day data:", dayData);
     } else {
-      console.log("No data for today.");
       setDataFetchedForToday(false);
     }
   } catch (error) {
@@ -99,12 +94,10 @@ const fetchDayData = async (firestore: any, userId: string) => {
           categories: ratings,
           note: note,
         });
-        console.log('Day saved successfully.');
         setIsSaving(false); 
         setShowModal(true);
         setDataFetchedForToday(true);
       } catch (error) {
-        console.error('Error saving day:', error);
         setIsSaving(false);
       }
     } else {
