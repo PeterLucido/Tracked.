@@ -12,12 +12,14 @@ interface DailyTrackProps {
   onRatingsChange: (newRatings: { [category: string]: number }) => void;
   onNoteChange: (newNote: string) => void;
   editable: boolean;
+  ratings: { [category: string]: number };
+  note: string;
 }
 
-const DailyTrack = ({ categories, editable, onRatingsChange, onNoteChange }: DailyTrackProps) => {
-  const [ratings, setRatings] = useState<{ [category: string]: number }>({});
-  const [note, setNote] = useState<string>(''); 
-  
+const DailyTrack = ({ categories, editable, ratings: initialRatings,
+note: initialNote, onRatingsChange, onNoteChange }: DailyTrackProps) => {
+  const [ratings, setRatings] = useState<{ [category: string]: number }>(initialRatings);
+  const [note, setNote] = useState<string>(initialNote);
   const currentDate = new Date().toLocaleDateString();
 
   const handleRating = (category: string, rating: number) => {

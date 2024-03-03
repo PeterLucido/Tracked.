@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DailyTrack from '@/components/DailyTrack';
-import { getFirestore, collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/components/loading';
 import SignUp from '@/components/SignUp';
+
+const getFormattedDate = (): string => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,7 +21,7 @@ export default function Home() {
   const [note, setNote] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [, setSaveSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dataFetchedForToday, setDataFetchedForToday] = useState(false);
 
@@ -26,6 +34,7 @@ export default function Home() {
         setLoading(true);
         const firestore = getFirestore();
         const categoriesCollectionRef = collection(firestore, 'categories', currentUser.uid, 'userCategories');
+        
         try {
           const querySnapshot = await getDocs(categoriesCollectionRef);
           const fetchedCategories = querySnapshot.docs.map(doc => ({
@@ -33,14 +42,40 @@ export default function Home() {
             scale: 10
           }));
           setCategories(fetchedCategories);
+          await fetchDayData(firestore, currentUser.uid); // Fetch day's data after categories are loaded
         } catch (error) {
-          console.error('Error fetching categories:', error);
+          console.error('Error fetching categories or day data:', error);
         }
         setLoading(false);
       }
     });
     return () => unsubscribe();
   }, []);
+
+  
+const fetchDayData = async (firestore: any, userId: string) => {
+  const today = getFormattedDate();
+  console.log("Formatted date:", today); // Log the formatted date
+
+  const userDayRef = doc(firestore, 'users', userId, 'days', today);
+  console.log("Firestore path:", userDayRef.path); // Log the Firestore path being used
+
+  try {
+    const docSnap = await getDoc(userDayRef);
+    if (docSnap.exists()) {
+      const dayData = docSnap.data();
+      setRatings(dayData.categories);
+      setNote(dayData.note);
+      setDataFetchedForToday(true);
+      console.log("Fetched day data:", dayData);
+    } else {
+      console.log("No data for today.");
+      setDataFetchedForToday(false);
+    }
+  } catch (error) {
+    console.error('Error fetching day data:', error);
+  }
+};
 
   const handleRatingsChange = (newRatings: { [key: string]: number }) => {
     setRatings(newRatings);
@@ -94,8 +129,10 @@ export default function Home() {
             onRatingsChange={handleRatingsChange}
             onNoteChange={handleNoteChange}
             editable={!dataFetchedForToday}
+            ratings={ratings}
+            note={note} 
           />
-          <TouchableOpacity style={styles.button} onPress={handleSave} disabled={isSaving}>
+          <TouchableOpacity style={styles.button} onPress={handleSave} disabled={isSaving || dataFetchedForToday}>
             <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
           </TouchableOpacity>
         </ScrollView>
