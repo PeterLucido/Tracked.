@@ -56,6 +56,8 @@ export default function Home() {
 const fetchDayData = async (firestore: any, userId: string) => {
   const today = getFormattedDate();
   const userDayRef = doc(firestore, 'users', userId, 'days', today);
+  console.log('User day ref:', userDayRef);
+  console.log('Today:', today);
 
   try {
     const docSnap = await getDoc(userDayRef);
@@ -63,6 +65,7 @@ const fetchDayData = async (firestore: any, userId: string) => {
       const dayData = docSnap.data();
       setRatings(dayData.categories);
       setNote(dayData.note);
+      console.log('Day data:', dayData);
       setDataFetchedForToday(true);
     } else {
       setDataFetchedForToday(false);
@@ -125,7 +128,7 @@ const fetchDayData = async (firestore: any, userId: string) => {
             ratings={ratings}
             note={note} 
           />
-          <TouchableOpacity style={styles.button} onPress={handleSave} disabled={isSaving || dataFetchedForToday}>
+          <TouchableOpacity style={styles.buttonSave} onPress={handleSave} disabled={isSaving || dataFetchedForToday}>
             <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -161,6 +164,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonSave: {
+    backgroundColor: '#00AEEF',
+    paddingVertical: 10,
+    width: '25%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginBottom: 50,
   },
   button: {
     backgroundColor: '#00AEEF',
