@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { router } from 'expo-router';
-import { dayData } from '@/Data/MockData'; // Adjust the path as necessary
+import { getAuth } from 'firebase/auth';
+import { DocumentData, QueryDocumentSnapshot, collection, getDocs, getFirestore } from 'firebase/firestore';
 
 
 interface MarkedDate {
@@ -14,8 +15,6 @@ interface MarkedDates {
   [date: string]: MarkedDate;
 }
 
-
-// Function to interpolate between pastel colors based on rating
 const ratingToPastelColor = (rating: number): string => {
   const normalizedRating = (rating - 1) / 9;
   let r, g, b = 0;
@@ -31,25 +30,41 @@ const ratingToPastelColor = (rating: number): string => {
   return `rgb(${r},${g},${b})`;
 };
 
-// Calculate the average rating for each day
 const calculateAverageRating = (categories: { [key: string]: number }): number => {
   const total = Object.values(categories).reduce((sum, rating) => sum + rating, 0);
   const average = total / Object.keys(categories).length;
   return average;
 };
 
-// Prepare marked dates with color coding
-const prepareMarkedDates = (): MarkedDates => {
-  return dayData.reduce((acc: MarkedDates, day) => {
-    const averageRating = calculateAverageRating(day.categories);
-    const color = ratingToPastelColor(averageRating);
-    acc[day.date] = { selected: true, selectedColor: color };
-    return acc;
-  }, {});
-};
-
 const CalendarView = () => {
-  const markedDates = prepareMarkedDates();
+  const [markedDates, setMarkedDates] = useState({});
+
+  useEffect(() => {
+    const fetchDayData = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const firestore = getFirestore();
+        const daysCollectionRef = collection(firestore, 'users', user.uid, 'days');
+        try {
+          const querySnapshot = await getDocs(daysCollectionRef);
+          const fetchedDays = querySnapshot.docs.reduce((acc: MarkedDates, doc: QueryDocumentSnapshot<DocumentData>) => {
+            const dayData = doc.data();
+            // Ensure dayData.categories is the correct type before passing to calculateAverageRating
+            const averageRating = calculateAverageRating(dayData.categories as { [key: string]: number });
+            const color = ratingToPastelColor(averageRating);
+            acc[doc.id] = { selected: true, selectedColor: color };
+            return acc;
+          }, {} as MarkedDates); // Type the initial value as MarkedDates
+          setMarkedDates(fetchedDays);
+        } catch (error) {
+          console.error('Error fetching day data:', error);
+        }
+      }
+    };
+
+    fetchDayData();
+  }, []);
 
   const handleDayPress = (dayId: { dateString: string }) => {
     router.push(`/day/${dayId.dateString}`);
