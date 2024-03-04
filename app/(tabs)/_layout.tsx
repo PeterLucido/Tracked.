@@ -19,11 +19,10 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const logo = require('@/assets/images/Tracked-Logo.png');
   const Logo = () => <Image source={logo} style={{ width: 125, height: 30 }} resizeMode="contain" />;
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#00AEEF', // Set the active icon color to #00AEEF
+        tabBarActiveTintColor: '#00AEEF',
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen

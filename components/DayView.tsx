@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { router } from 'expo-router';
 
 interface Rating {
   [key: string]: number;
@@ -22,6 +23,10 @@ const DayView = ({ dayData }: DayViewProps) => {
     name: key,
     rating: dayData.categories[key],
   }));
+
+  const handleBackPress = () => {
+    router.push('/month');
+  };
 
   return (
     <View style={styles.container}>
@@ -48,6 +53,9 @@ const DayView = ({ dayData }: DayViewProps) => {
       <View style={styles.noteContainer}>
         <Text style={styles.note}>{dayData.note}</Text>
       </View>
+      <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+        <Text style={styles.buttonText}>Back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -69,7 +77,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center', 
   },
   categoryContainer: {
-    alignSelf: 'stretch', // Stretch to take full width
+    alignSelf: 'stretch', 
     marginBottom: 8,
   },
   sliderRow: {
@@ -105,6 +113,21 @@ const styles = StyleSheet.create({
   note: {
     color: 'grey',
     fontSize: 18,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  backButton: {
+    backgroundColor: '#00AEEF',
+    paddingVertical: 10,
+    width: '25%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginTop: 20,
   },
 });
 
