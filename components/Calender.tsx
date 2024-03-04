@@ -50,12 +50,11 @@ const CalendarView = () => {
           const querySnapshot = await getDocs(daysCollectionRef);
           const fetchedDays = querySnapshot.docs.reduce((acc: MarkedDates, doc: QueryDocumentSnapshot<DocumentData>) => {
             const dayData = doc.data();
-            // Ensure dayData.categories is the correct type before passing to calculateAverageRating
             const averageRating = calculateAverageRating(dayData.categories as { [key: string]: number });
             const color = ratingToPastelColor(averageRating);
             acc[doc.id] = { selected: true, selectedColor: color };
             return acc;
-          }, {} as MarkedDates); // Type the initial value as MarkedDates
+          }, {} as MarkedDates); 
           setMarkedDates(fetchedDays);
         } catch (error) {
           console.error('Error fetching day data:', error);
@@ -96,7 +95,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 
