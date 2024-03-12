@@ -5,6 +5,7 @@ import { getFirestore, collection, getDocs, doc, setDoc, getDoc } from 'firebase
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/components/loading';
 import SignUp from '@/components/SignUp';
+import Login from '@/components/Login';
 
 const getFormattedDate = (): string => {
   const date = new Date();
@@ -24,6 +25,7 @@ export default function Home() {
   const [, setSaveSuccess] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dataFetchedForToday, setDataFetchedForToday] = useState(false);
+  const [isLoginView, setIsLoginView] = useState(true);
 
 
   useEffect(() => {
@@ -111,7 +113,11 @@ const fetchDayData = async (firestore: any, userId: string) => {
   
 
   if (!user) {
-    return <SignUp />;
+    return isLoginView ? (
+      <Login toggleView={() => setIsLoginView(!isLoginView)} />
+    ) : (
+      <SignUp toggleView={() => setIsLoginView(!isLoginView)} />
+    );
   }
 
   return (

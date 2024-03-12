@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
-interface SignUpState {
+interface LoginState {
   email: string;
   password: string;
 }
 
-interface SignUpComponentProps {
+interface LoginComponentProps {
   toggleView: () => void;
 }
 
-const SignUpComponent = ({ toggleView }: SignUpComponentProps) => {
-  const [state, setState] = useState<SignUpState>({ email: '', password: '' });
+const LoginComponent = ({ toggleView }: LoginComponentProps) => {
+  const [state, setState] = useState<LoginState>({ email: '', password: '' });
 
-  const handleSignUp = () => {
+  const handleLogin = () => {
     const { email, password } = state;
-    createUserWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        Alert.alert('Success', `User created: ${userCredential.user.uid}`);
+        Alert.alert('Success', `User logged in: ${userCredential.user.uid}`);
       })
       .catch((error) => {
-        Alert.alert('Error', `Error creating user: ${error.message}`);
+        Alert.alert('Error', `Error logging in: ${error.message}`);
       });
   };
 
@@ -41,8 +41,8 @@ const SignUpComponent = ({ toggleView }: SignUpComponentProps) => {
         value={state.password}
         onChangeText={(text) => setState({ ...state, password: text })}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
-      <Button title="Already have an account? Log In" onPress={toggleView} />
+      <Button title="Log In" onPress={handleLogin} />
+      <Button title="Don't have an account? Sign Up" onPress={toggleView} />
     </View>
   );
 };
@@ -50,9 +50,9 @@ const SignUpComponent = ({ toggleView }: SignUpComponentProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: 'white',
   },
   input: {
     marginBottom: 20,
@@ -63,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpComponent;
+export default LoginComponent;
