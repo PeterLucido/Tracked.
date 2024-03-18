@@ -6,6 +6,7 @@ import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/components/loading';
 import SignUp from '@/components/SignUp';
 import Login from '@/components/Login';
+import { router } from 'expo-router';
 
 const getFormattedDate = (): string => {
   const date = new Date();
@@ -26,7 +27,6 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [dataFetchedForToday, setDataFetchedForToday] = useState(false);
   const [isLoginView, setIsLoginView] = useState(true);
-
 
   useEffect(() => {
     const auth = getAuth();
@@ -54,28 +54,24 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  
-const fetchDayData = async (firestore: any, userId: string) => {
-  const today = getFormattedDate();
-  const userDayRef = doc(firestore, 'users', userId, 'days', today);
-  console.log('User day ref:', userDayRef);
-  console.log('Today:', today);
+  const fetchDayData = async (firestore: any, userId: string) => {
+    const today = getFormattedDate();
+    const userDayRef = doc(firestore, 'users', userId, 'days', today);
 
-  try {
-    const docSnap = await getDoc(userDayRef);
-    if (docSnap.exists()) {
-      const dayData = docSnap.data();
-      setRatings(dayData.categories);
-      setNote(dayData.note);
-      console.log('Day data:', dayData);
-      setDataFetchedForToday(true);
-    } else {
-      setDataFetchedForToday(false);
+    try {
+      const docSnap = await getDoc(userDayRef);
+      if (docSnap.exists()) {
+        const dayData = docSnap.data();
+        setRatings(dayData.categories);
+        setNote(dayData.note);
+        setDataFetchedForToday(true);
+      } else {
+        setDataFetchedForToday(false);
+      }
+    } catch (error) {
+      console.error('Error fetching day data:', error);
     }
-  } catch (error) {
-    console.error('Error fetching day data:', error);
-  }
-};
+  };
 
   const handleRatingsChange = (newRatings: { [key: string]: number }) => {
     setRatings(newRatings);
@@ -110,6 +106,10 @@ const fetchDayData = async (firestore: any, userId: string) => {
       setIsSaving(false);
     }
   };
+
+  const handleCreateCategory = () => {
+    router.push('/create');
+  };
   
 
   if (!user) {
@@ -126,17 +126,28 @@ const fetchDayData = async (firestore: any, userId: string) => {
         <Loading />
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
-          <DailyTrack 
-            categories={categories} 
-            onRatingsChange={handleRatingsChange}
-            onNoteChange={handleNoteChange}
-            editable={!dataFetchedForToday}
-            ratings={ratings}
-            note={note} 
-          />
-          <TouchableOpacity style={styles.buttonSave} onPress={handleSave} disabled={isSaving || dataFetchedForToday}>
-            <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
-          </TouchableOpacity>
+          {categories.length === 0 ? (
+            <View style={styles.container}>
+              <Text style={styles.noFound}>No categories found. Please create a category.</Text>
+              <TouchableOpacity onPress={handleCreateCategory} style={styles.createCategoryButton}>
+                <Text style={styles.buttonText}>Create Category</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <>
+              <DailyTrack
+                categories={categories}
+                onRatingsChange={handleRatingsChange}
+                onNoteChange={handleNoteChange}
+                editable={!dataFetchedForToday}
+                ratings={ratings}
+                note={note} 
+              />
+              <TouchableOpacity style={styles.buttonSave} onPress={handleSave} disabled={isSaving || dataFetchedForToday}>
+                <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </ScrollView>
       )}
       <Modal
@@ -179,6 +190,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
     marginBottom: 50,
+  },
+  createCategoryButton: {
+    backgroundColor: '#00AEEF',
+    paddingVertical: 10,
+    width: '50%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginTop: 20,
+    padding: 10,
+  },
+  noFound: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'grey',
+    alignSelf: 'center',
   },
   button: {
     backgroundColor: '#00AEEF',

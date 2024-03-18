@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
 
@@ -19,10 +19,29 @@ interface DayViewProps {
 }
 
 const DayView = ({ dayData }: DayViewProps) => {
+
+  
   const categoriesArray = Object.keys(dayData.categories).map((key) => ({
     name: key,
     rating: dayData.categories[key],
   }));
+
+  const handleCreateCategory = () => {
+    router.push('/create');
+  };
+
+  console.log("Categories Array Length:", categoriesArray.length)
+
+  if (categoriesArray.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text>No categories found. Please create a category.</Text>
+        <TouchableOpacity onPress={handleCreateCategory} style={styles.createCategoryButton}>
+          <Text style={styles.buttonText}>Create Category</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const handleBackPress = () => {
     router.push('/month');
@@ -124,6 +143,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#00AEEF',
     paddingVertical: 10,
     width: '25%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  createCategoryButton: {
+    backgroundColor: '#00AEEF',
+    paddingVertical: 10,
+    width: '50%',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
