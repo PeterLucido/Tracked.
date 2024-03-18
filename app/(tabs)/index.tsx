@@ -128,7 +128,7 @@ export default function Home() {
         <ScrollView contentContainerStyle={styles.container}>
           {categories.length === 0 ? (
             <View style={styles.container}>
-              <Text style={styles.noFound}>No categories found. Please create a category.</Text>
+              <Text style={styles.noFound}>Please create a category.</Text>
               <TouchableOpacity onPress={handleCreateCategory} style={styles.createCategoryButton}>
                 <Text style={styles.buttonText}>Create Category</Text>
               </TouchableOpacity>
