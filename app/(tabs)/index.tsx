@@ -6,6 +6,7 @@ import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/components/loading';
 import SignUp from '@/components/SignUp';
 import Login from '@/components/Login';
+import { useFocusEffect } from '@react-navigation/native'
 import { router } from 'expo-router';
 
 const getFormattedDate = (): string => {
@@ -28,31 +29,36 @@ export default function Home() {
   const [dataFetchedForToday, setDataFetchedForToday] = useState(false);
   const [isLoginView, setIsLoginView] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
+  const fetchData = async () => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setLoading(true);
-        const firestore = getFirestore();
-        const categoriesCollectionRef = collection(firestore, 'categories', currentUser.uid, 'userCategories');
-        
-        try {
-          const querySnapshot = await getDocs(categoriesCollectionRef);
-          const fetchedCategories = querySnapshot.docs.map(doc => ({
-            name: doc.data().name,
-            scale: 10
-          }));
-          setCategories(fetchedCategories);
-          await fetchDayData(firestore, currentUser.uid);
-        } catch (error) {
-          console.error('Error fetching categories or day data:', error);
-        }
-        setLoading(false);
+    const currentUser = auth.currentUser;
+    setUser(currentUser);
+
+    if (currentUser) {
+      setLoading(true);
+      const firestore = getFirestore();
+      const categoriesCollectionRef = collection(firestore, 'categories', currentUser.uid, 'userCategories');
+
+      try {
+        const querySnapshot = await getDocs(categoriesCollectionRef);
+        const fetchedCategories = querySnapshot.docs.map(doc => ({
+          name: doc.data().name,
+          scale: 10
+        }));
+        setCategories(fetchedCategories);
+        await fetchDayData(firestore, currentUser.uid);
+      } catch (error) {
+        console.error('Error fetching categories or day data:', error);
       }
-    });
-    return () => unsubscribe();
-  }, []);
+      setLoading(false);
+    }
+  }
 
   const fetchDayData = async (firestore: any, userId: string) => {
     const today = getFormattedDate();
